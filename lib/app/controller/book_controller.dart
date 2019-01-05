@@ -5,15 +5,14 @@ class BookController {
   BookDao dao = BookDao();
 
   Future<List<Book>> fetchAll() async {
-    var res = dao.findAll();
-    return res;
+    return await dao.findAll();
   }
 
-  Future<bool> modifyInfoById(int id, Map<String, dynamic> updatingInfo) async {
-    return null;
+  Future<bool> modifyInfoById(Book book) async {
+    return await dao.update(book);
   }
 
-  Future<bool> removeById(int uniqueId) async {
-    return null;
+  Future<bool> removeById(int id) async {
+    return await dao.remove(id);
   }
 }

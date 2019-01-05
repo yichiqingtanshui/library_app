@@ -57,6 +57,11 @@ class AppDataBase {
           onOpen: _onOpen,
         );
       }
+    } else {
+      _db = await openDatabase(
+        path,
+        version: 1,
+      );
     }
     return _db;
   }

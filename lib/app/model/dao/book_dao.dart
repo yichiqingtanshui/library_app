@@ -32,7 +32,7 @@ class BookDao implements CommonDao<Book> {
   }
 
   @override
-  Future<Book> find(SQLiteTypesINTEGER id) async {
+  Future<Book> find(int id) async {
     Database db = await appDataBase.getInstance();
     List<Map<String, dynamic>> rawBooks =
         await db.query(tableName, where: 'id = ?', whereArgs: [id]);
@@ -55,7 +55,7 @@ class BookDao implements CommonDao<Book> {
   }
 
   @override
-  Future<bool> remove(SQLiteTypesINTEGER id) async {
+  Future<bool> remove(int id) async {
     Database db = await appDataBase.getInstance();
 
     int result = await db.delete(tableName, where: 'id = ?', whereArgs: [id]);
@@ -69,8 +69,8 @@ class BookDao implements CommonDao<Book> {
   Future<bool> update(Book book) async {
     Database db = await appDataBase.getInstance();
 
-    int result = await db.update(tableName, book.toMap(),
-        where: 'id = ?', whereArgs: [book.id]);
+    int result = await db
+        .update(tableName, book.toMap(), where: 'id = ?', whereArgs: [book.id]);
 
     await db.close();
 
