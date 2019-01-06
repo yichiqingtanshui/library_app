@@ -20,7 +20,6 @@ void sqlfiteDebugOn() async {
 /// **获取指定 db name 的路径**
 Future<String> getTargetDBPath(String dbName) async {
   var databasesPath = await getDatabasesPath();
-  log(databasesPath);
 
   var path = join(databasesPath, dbName);
 
