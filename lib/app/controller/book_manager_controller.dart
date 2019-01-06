@@ -4,6 +4,7 @@ import 'package:library_app/app/model/dao/borrowing_info_dao.dart';
 import 'package:library_app/app/model/entity/book.dart';
 import 'package:library_app/app/model/entity/borrower.dart';
 import 'package:library_app/app/model/entity/borrowing_info.dart';
+import 'package:library_app/util/result.dart';
 
 class BookManagerController {
   static BorrowingInfoDao borrowingInfoDao = BorrowingInfoDao();
@@ -16,22 +17,56 @@ class BookManagerController {
   }
 
   /// 获取所有借阅书籍
-  Future<List<Book>> retrieveAllBorrowedBooks(Borrower borrower) async {
+  Future<List<Map<Book, BorrowingInfo>>> retrieveAllBorrowedBooks(
+      Borrower borrower) async {
     List<BorrowingInfo> all = await bookDao.findByBorrower(borrower);
-    List<Book> books = [];
+    List<Map<Book, BorrowingInfo>> books = [];
     all.forEach((info) async {
-      books.add(await bookDao.find(info.bookId));
+      Map<Book, BorrowingInfo> relation = {
+        (await bookDao.find(info.bookId)): info
+      };
+      books.add(relation);
     });
     return books;
   }
 
   /// 借书
-  borrowBookById(int borrowerId, int bookId) async {
+  Future<Result> borrowBookById(int borrowerId, int bookId) async {
     // 1. 判断是否有借书资格
+    Borrower borrower = await borrowerDao.find(borrowerId);
+    if (!borrower.canBorrow) {
+      return Result(
+        state: false,
+        message: '该借阅者没有借书资格',
+      );
+    }
 
     // 2. 判断书籍存量是否满足借阅条件
+    Book book = await bookDao.find(bookId);
+    List<BorrowingInfo> all = await borrowingInfoDao.findByBook(book);
+    int remain = book.amount - all.length;
+    if (remain > 0) {
+      var now = DateTime.now();
+      var borrowTime = DateTime(now.year, now.month, now.day);
+      BorrowingInfo borrowingInfo = BorrowingInfo(
+        id: all.length + 1,
+        bookId: book.id,
+        borrowerId: borrower.id,
+        borrowTime: now.millisecondsSinceEpoch,
+        deadline: borrowTime.millisecondsSinceEpoch,
+      );
+      bool state = await borrowingInfoDao.add(borrowingInfo);
 
-    // 3. 结果回馈
+      return Result(
+        state: state,
+        message: state ? '借阅成功' : '数据库操作失败,请联系管理员',
+      );
+    } else {
+      return Result(
+        state: false,
+        message: '抱歉,该书馆藏不足',
+      );
+    }
   }
 
   /// 还书
@@ -43,5 +78,3 @@ class BookManagerController {
     // 3. 结果回馈
   }
 }
-
-// TODO: 表示借还书的返回类型定义
