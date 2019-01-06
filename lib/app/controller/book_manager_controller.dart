@@ -15,8 +15,18 @@ class BookManagerController {
     return await borrowerDao.add(borrower);
   }
 
+  /// 获取所有借阅书籍
+  Future<List<Book>> retrieveAllBorrowedBooks(Borrower borrower) async {
+    List<BorrowingInfo> all = await bookDao.findByBorrower(borrower);
+    List<Book> books = [];
+    all.forEach((info) async {
+      books.add(await bookDao.find(info.bookId));
+    });
+    return books;
+  }
+
   /// 借书
-  borrowBookById(int bookId) async {
+  borrowBookById(int borrowerId, int bookId) async {
     // 1. 判断是否有借书资格
 
     // 2. 判断书籍存量是否满足借阅条件
@@ -25,7 +35,7 @@ class BookManagerController {
   }
 
   /// 还书
-  returnBookById(int bookId) async {
+  returnBookById(int borrowerId, int bookId) async {
     // 1. 更新相应表
 
     // 2. 检查是否超期

@@ -1,7 +1,9 @@
+import 'package:library_app/app/model/entity/borrower.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'package:library_app/app/model/service/app_database.dart';
 import 'package:library_app/app/model/entity/book.dart' show Book;
+import 'package:library_app/app/model/entity/borrowing_info.dart';
 
 import 'package:library_app/app/model/dao/interface/common_dao.dart';
 
@@ -40,6 +42,15 @@ class BookDao implements CommonDao<Book> {
 //    await db.close();
 
     return Book.fromMap(rawBooks[0]);
+  }
+
+  Future<List<BorrowingInfo>> findByBorrower(Borrower borrower) async {
+    Database db = await appDataBase.getWritableDb();
+    List<Map<String, dynamic>> results = await db.query('borrowing_info',
+        where: 'borrower_id = ?', whereArgs: [borrower.id]);
+    List<BorrowingInfo> borrowingInfos =
+        results.map((info) => BorrowingInfo.fromMap(info)).toList();
+    return borrowingInfos;
   }
 
   @override

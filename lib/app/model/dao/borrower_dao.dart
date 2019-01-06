@@ -60,4 +60,5 @@ class BorrowerDao implements CommonDao<Borrower> {
         .toList();
     return borrowers;
   }
+
 }

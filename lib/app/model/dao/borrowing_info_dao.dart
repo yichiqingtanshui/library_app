@@ -59,4 +59,5 @@ class BorrowingInfoDao implements CommonDao<BorrowingInfo> {
         where: 'id = ?', whereArgs: [borrowingInfo.id]);
     return result == 1;
   }
+
 }

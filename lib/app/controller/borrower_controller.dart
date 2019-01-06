@@ -1,4 +1,5 @@
 import 'package:library_app/app/model/dao/borrower_dao.dart';
+import 'package:library_app/app/model/dao/borrowing_info_dao.dart';
 import 'package:library_app/app/model/entity/borrower.dart';
 
 class BorrowerController {
@@ -24,9 +25,5 @@ class BorrowerController {
     return await dao.findAll();
   }
 
-  /// 获取所有借阅书籍
-  Future<List> retriveAllBorrowedBooks() async {
-    //TODO: not implemented
-    return null;
-  }
+
 }
