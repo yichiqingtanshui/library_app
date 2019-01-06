@@ -4,28 +4,50 @@
 1. 能展现所有的书籍
 2. 能修改指定书籍相关信息
 3. 能删除书籍
-6. 能展现所有借阅人
-7. 能修改借阅人信息
-8. 能删除借阅人
-9. 能办理借书卡(创建新借阅人)
+4. 能展现所有借阅人
+5. 能修改借阅人信息
+6. 能删除借阅人
+7. 能办理借书卡(创建新借阅人)
+8. 能借书/还书
+9. 能对超期还书做额外处理
+10. 提供迁移和备份界面
 
 # Controller
-1. 返还书籍列表
-`.fetchAllBooks() -> List<Book>`  
-2. 更改书籍的相应信息,返还是否成功
-`.modifyBookInfo(bookId: int, updatingInfo: Map<String,dynamic> ) -> bool`
-3. 删除指定书籍,返还是否成功
-`.removeBookById(bookId: int) -> bool`
-6. 返还用户(借阅人)列表
-`.fetchAllBorrowers() -> List<Borrower>`
-7. 更改用户(借阅人)的相应信息,返还是否成功
-`.modifyBorrowerInfo(borrowerId: int, updatingInfo: Map<String,dynamic> ) -> bool`
-8. 删除指定用户,返还是否成功
-`.removeBorrowerById(BorrowerId: int) -> bool`
-9. 插入借阅人信息,返还是否成功
-`.transactCard(borrower: Borrower) -> bool`
 
 # Model
+
+
+# 项目结构
+
+```bash
+lib
+├── main.dart
+├── app
+│   ├── controller
+│   │   ├── book_controller.dart
+│   │   ├── book_manager_controller.dart
+│   │   └── borrower_controller.dart
+│   ├── model
+│   │   ├── dao
+│   │   │   ├── book_dao.dart
+│   │   │   ├── borrower_dao.dart
+│   │   │   ├── borrowing_info_dao.dart
+│   │   │   └── interface
+│   │   │       └── common_dao.dart
+│   │   ├── entity
+│   │   │   ├── book.dart
+│   │   │   ├── borrower.dart
+│   │   │   └── borrowing_info.dart
+│   │   └── service
+│   │       └── app_database.dart
+│   └── view
+│       └── not_implemented.todo
+└── util
+    ├── helper_db_functions.dart
+    └── helper_log.dart
+
+9 directories, 15 files
+```
 
 
 # DB 禁用词语
@@ -50,30 +72,4 @@
 "union","unique","update","using",
 "values",
 "when","where"
-```
-
-# 项目结构
-
-```bash
-lib
-├──   app
-│   ├──   controller
-│   │   └──   not_implemented.todo
-│   ├──   model
-│   │   ├──   dao
-│   │   │   ├──   book_dao.dart
-│   │   │   └──   dao.dart
-│   │   └──   entity
-│   │       ├──   book.dart
-│   │       └──   borrower.dart
-│   └──   view
-│       └──   not_implemented.todo
-├──   config
-│   └──   app_database.dart
-├──   util
-│   ├──   helper_db_functions.dart
-│   └──   helper_log.dart
-└──main.dart
-
-8 directories, 10 files
 ```
