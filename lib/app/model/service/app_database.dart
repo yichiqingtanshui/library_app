@@ -28,14 +28,21 @@ class AppDataBase {
 
   _onCreate(Database db, int version) async {
     // 创建表
-    await db.execute(createTableSQL);
+    for (String sql in createTableSQL) {
+      await db.execute(sql);
+    }
     // 填充数据
-    await db.transaction((txn) async {
-      int id1 = await txn.rawInsert(mockedInsertSQL1);
-      print('inserted1: $id1');
-      int id2 = await txn.rawInsert(mockedInsertSQL2);
-      print('inserted2: $id2');
-    });
+    List<String> insertSqls = allInsertsSQL.split('\n');
+    insertSqls.removeLast();
+    for (String sql in insertSqls) {
+      await db.rawInsert(sql);
+    }
+//    await db.transaction((txn) async {
+//      int id1 = await txn.rawInsert(mockedInsertSQL1);
+//      print('inserted1: $id1');
+//      int id2 = await txn.rawInsert(mockedInsertSQL2);
+//      print('inserted2: $id2');
+//    });
   }
 
   // ignore: unused_element
@@ -89,7 +96,8 @@ class AppDataBase {
   }
 }
 
-const String createTableSQL = """
+final List<String> createTableSQL = [
+  """
   create table book
 (
   id           INTEGER not null
@@ -103,10 +111,60 @@ const String createTableSQL = """
   amount       INTEGER,
   publish_time TEXT
 );
-
-create unique index book_isbn_uindex
+""",
+  """
+  create unique index book_isbn_uindex
   on book (isbn);
-  """;
+  """,
+  """
+  create table borrower
+(
+  id          INTEGER not null
+    constraint borrower_pk
+      primary key autoincrement,
+  card_number INTEGER,
+  name        TEXT,
+  sex         TEXT,
+  department  TEXT,
+  grade       TEXT,
+  can_borrow  INTEGER default 1 not null
+);
+""",
+  """
+create unique index borrower_card_number_uindex
+  on borrower (card_number);
+""",
+  """
+  create table borrowing_info
+(
+  id          INTEGER not null
+    constraint book_borrower_pk
+      primary key autoincrement,
+  book_id     INTEGER not null
+    constraint borrowing_info_book_id_fk
+      references book,
+  borrower_id INTEGER not null
+    constraint borrowing_info_borrower_id_fk
+      references borrower,
+  borrow_time INTEGER not null,
+  deadline    INTEGER not null,
+  return_time INTEGER,
+  is_returned INTEGER not null
+);
+  """
+];
+
+const String allInsertsSQL = """
+INSERT INTO book (isbn, title, press, author, brief, amount, publish_time) VALUES ( 9787115439789, '第一行代码：Android(第2版)', '人民邮电出版社', '郭霖', '本书被广大Android', 3, '2016-12-1');
+INSERT INTO book (isbn, title, press, author, brief, amount, publish_time) VALUES ( 9787121192821, 'Linux多线程服务端编程', '电子工业出版社', '陈硕', '本书主要讲述采用现代C++', 3, '2013-1-15');
+INSERT INTO book (isbn, title, press, author, brief, amount, publish_time) VALUES ( 9787111407010, '算法导论(原书第3版)', '机械工业出版社', 'Thomas H.Cormen/Charles E.Leiserson/Ronald L.Rivest/Clifford Stein ', '在有关算法的书中', 5, '2012-12');
+INSERT INTO book (isbn, title, press, author, brief, amount, publish_time) VALUES ( 9787115293800, '算法（第4版）', '人民邮电出版社', '塞奇威克 (Robert Sedgewick) / 韦恩 (Kevin Wayne)', '简介', 3, '2012-10-1');
+INSERT INTO borrowing_info (book_id, borrower_id, borrow_time, deadline, return_time, is_returned) VALUES ( 1, 1, 966, 123123, 100000, 0);
+INSERT INTO borrowing_info (book_id, borrower_id, borrow_time, deadline, return_time, is_returned) VALUES ( 2, 1, 967, 123123, null, 1);
+INSERT INTO borrowing_info (book_id, borrower_id, borrow_time, deadline, return_time, is_returned) VALUES ( 3, 2, 1012, 123123, null, 0);
+INSERT INTO borrower (card_number, name, sex, department, grade, can_borrow) VALUES (123456789, 'yichiqingtanshui', '男', '计算机科学与技术系', '大三', 1);
+INSERT INTO borrower (card_number, name, sex, department, grade, can_borrow) VALUES (987654321, 'straydragon', '男', '计算机科学与技术系', '大三', 1);
+""";
 
 const String mockedInsertSQL1 = """
 INSERT INTO book (id, isbn, title, press, author, brief, amount, publish_time) VALUES (1, 9787115439789, '第一行代码：Android(第2版)', '人民邮电出版社', '郭霖', '本书被广大Android 开发者誉为“Android 学习第一书”。全书系统全面、循序渐进地介绍了Android软件开发的必备知识、经验和技巧。

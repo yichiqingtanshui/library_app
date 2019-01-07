@@ -24,7 +24,7 @@ class BorrowerController {
     return await dao.findAll();
   }
 
-  /// 通过标题搜索相应书籍
+  /// 通过借阅人姓名搜索相应借阅人
   Future<List<Borrower>> searchByTitle(String name) async {
     return await dao.findByName(name, isBlurred: true);
   }
