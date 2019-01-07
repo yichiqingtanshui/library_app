@@ -1,5 +1,4 @@
 import 'package:meta/meta.dart';
-import 'package:library_app/app/model/entity/borrowing_info.dart';
 
 class Borrower {
   final int id;
@@ -8,7 +7,7 @@ class Borrower {
   final int cardNumber;
   final String department;
   final String grade;
-  final bool canBorrow;
+  bool canBorrow;
 
   Borrower({
     @required this.id,

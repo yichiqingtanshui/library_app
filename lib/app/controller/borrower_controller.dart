@@ -1,5 +1,4 @@
 import 'package:library_app/app/model/dao/borrower_dao.dart';
-import 'package:library_app/app/model/dao/borrowing_info_dao.dart';
 import 'package:library_app/app/model/entity/borrower.dart';
 
 class BorrowerController {
@@ -25,5 +24,8 @@ class BorrowerController {
     return await dao.findAll();
   }
 
-
+  /// 通过标题搜索相应书籍
+  Future<List<Borrower>> searchByTitle(String name) async {
+    return await dao.findByName(name, isBlurred: true);
+  }
 }

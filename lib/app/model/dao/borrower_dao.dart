@@ -51,6 +51,33 @@ class BorrowerDao implements CommonDao<Borrower> {
     return borrower;
   }
 
+  Future<List<Borrower>> findByName(String name,
+      {bool isBlurred = false}) async {
+    Database db = await appDataBase.getWritableDb();
+    List<Borrower> borrowers;
+    if (isBlurred) {
+      String sql = """
+SELECT *
+FROM  borrower
+WHERE borrower.name like ?;
+    """;
+
+      List<Map<String, dynamic>> rawBorrowers =
+          await db.rawQuery(sql, ['$name%']);
+      borrowers = rawBorrowers
+          .map((rawBorrower) => Borrower.fromMap(rawBorrower))
+          .toList();
+    } else {
+      List<Map<String, dynamic>> rawBorrowers =
+          await db.query(tableName, where: 'title = ?', whereArgs: [name]);
+      borrowers = rawBorrowers
+          .map((rawBorrower) => Borrower.fromMap(rawBorrower))
+          .toList();
+    }
+
+    return borrowers;
+  }
+
   @override
   Future<List<Borrower>> findAll() async {
     Database db = await appDataBase.getWritableDb();
@@ -60,5 +87,4 @@ class BorrowerDao implements CommonDao<Borrower> {
         .toList();
     return borrowers;
   }
-
 }

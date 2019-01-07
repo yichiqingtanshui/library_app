@@ -53,6 +53,28 @@ class BookDao implements CommonDao<Book> {
     return borrowingInfos;
   }
 
+  Future<List<Book>> findByBookTitle(String title,
+      {bool isBlurred = false}) async {
+    Database db = await appDataBase.getWritableDb();
+    List<Book> books;
+    if (isBlurred) {
+      String sql = """
+SELECT *
+FROM  book
+WHERE book.title like ?;
+    """;
+
+      List<Map<String, dynamic>> rawBooks = await db.rawQuery(sql, ['$title%']);
+      books = rawBooks.map((rawBook) => Book.fromMap(rawBook)).toList();
+    } else {
+      List<Map<String, dynamic>> rawBooks =
+          await db.query(tableName, where: 'title = ?', whereArgs: [title]);
+      books = rawBooks.map((rawBook) => Book.fromMap(rawBook)).toList();
+    }
+
+    return books;
+  }
+
   @override
   Future<List<Book>> findAll() async {
     Database db = await appDataBase.getWritableDb();

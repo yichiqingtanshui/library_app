@@ -23,4 +23,9 @@ class BookController {
   Future<List<Book>> fetchAll() async {
     return await dao.findAll();
   }
+
+  /// 通过标题搜索相应书籍
+  Future<List<Book>> searchByTitle(String title) async {
+    return await dao.findByBookTitle(title, isBlurred: true);
+  }
 }

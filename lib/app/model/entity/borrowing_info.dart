@@ -5,9 +5,9 @@ class BorrowingInfo {
   final int bookId;
   final int borrowerId;
   final int deadline;
-  final int returnTime;
   final int borrowTime;
-  final bool isReturned;
+  bool isReturned;
+  int returnTime;
 
   BorrowingInfo({
     @required this.id,
