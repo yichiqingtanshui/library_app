@@ -10,26 +10,28 @@ class Book {
   final int amount;
   final String press;
 
-  Book(
-      {@required this.id,
-      this.isbn,
-      this.title,
-      this.publish_time,
-      this.author,
-      this.brief,
-      this.amount,
-      this.press});
+  Book({
+    this.id,
+    @required this.isbn,
+    this.title,
+    this.publish_time,
+    this.author,
+    this.brief,
+    this.amount,
+    this.press,
+  });
 
   factory Book.fromMap(Map<String, dynamic> map) {
     return Book(
-        id: map['id'],
-        isbn: map['isbn'],
-        title: map['title'],
-        publish_time: map['publish_time'],
-        amount: map['amount'],
-        author: map['author'],
-        brief: map['brief'],
-        press: map['press']);
+      id: map['id'],
+      isbn: map['isbn'],
+      title: map['title'],
+      publish_time: map['publish_time'],
+      amount: map['amount'],
+      author: map['author'],
+      brief: map['brief'],
+      press: map['press'],
+    );
   }
 
   Map<String, dynamic> toMap() {

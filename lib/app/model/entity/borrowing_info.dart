@@ -10,13 +10,13 @@ class BorrowingInfo {
   int returnTime;
 
   BorrowingInfo({
-    @required this.id,
-    this.bookId,
-    this.borrowerId,
-    this.deadline,
+    this.id,
     this.returnTime,
-    this.borrowTime,
-    this.isReturned,
+    this.isReturned = false,
+    @required this.bookId,
+    @required this.borrowerId,
+    @required this.deadline,
+    @required this.borrowTime,
   });
 
   factory BorrowingInfo.fromMap(Map<String, dynamic> map) {

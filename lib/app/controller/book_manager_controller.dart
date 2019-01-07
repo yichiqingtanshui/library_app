@@ -60,9 +60,8 @@ class BookManagerController {
       var borrowTime = DateTime(now.year, now.month, now.day + 30);
 
       BorrowingInfo borrowingInfo = BorrowingInfo(
-        id: all.length + 1,
-        bookId: book.id,
         borrowerId: borrower.id,
+        bookId: book.id,
         borrowTime: now.millisecondsSinceEpoch,
         deadline: borrowTime.millisecondsSinceEpoch,
       );

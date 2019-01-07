@@ -10,13 +10,13 @@ class Borrower {
   bool canBorrow;
 
   Borrower({
-    @required this.id,
+    this.id,
     this.name,
     this.sex,
-    this.cardNumber,
     this.department,
     this.grade,
-    this.canBorrow,
+    this.canBorrow = true,
+    @required this.cardNumber,
   });
 
   factory Borrower.fromMap(Map<String, dynamic> map) {
@@ -26,6 +26,7 @@ class Borrower {
       sex: map['sex'],
       department: map['department'],
       grade: map['grade'],
+      cardNumber: map['card_number'],
       canBorrow: map['can_borrow'] == 1,
     );
   }
