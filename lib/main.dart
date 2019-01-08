@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:library_app/app/controller/book_manager_controller.dart';
 import 'package:library_app/app/controller/borrower_controller.dart';
 import 'package:library_app/app/model/service/app_database.dart';
+import 'package:library_app/app/view/book_manager_page.dart';
 import 'package:library_app/util/helper_db_functions.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -63,7 +64,12 @@ class App extends StatefulWidget {
 class AppState extends State<App> {
   BookController bookController;
   BorrowerController borrowerController;
-
+  int _selectedIndex = 0;
+  final _widgetOptions = [
+    BookManagerPage(),
+    Text('Index 1: Business'),
+    Text('Index 2: School'),
+  ];
 //  BookManagerController bookManagerController;
 
   AppState(this.bookController, this.borrowerController);
@@ -83,7 +89,6 @@ class AppState extends State<App> {
       isbn: 0,
       publish_time: ' ',
     );
-
     log((await bookController.fetchAll()).toString());
 //    await bookController.modifyByBook(updatedBook);
 //    log((await bookController.fetchAll()).toString());
@@ -117,13 +122,34 @@ class AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('图书馆管理系统'),
-        centerTitle: true,
-      ),
       body: Center(
-        child: Text('首页'),
+        child: _widgetOptions[_selectedIndex],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            title: Text('Home'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.business),
+            title: Text('Business'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.school),
+            title: Text('School'),
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        fixedColor: Colors.deepPurple,
+        onTap: _onItemTapped,
       ),
     );
+  }
+
+  _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 }
