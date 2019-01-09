@@ -1,21 +1,15 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-void main() => runApp(MaterialApp(home: TextFormFieldDemo()));
+class AddBorrowerPage extends StatefulWidget {
+  const AddBorrowerPage({Key key}) : super(key: key);
 
-class TextFormFieldDemo extends StatefulWidget {
-  const TextFormFieldDemo({Key key}) : super(key: key);
-
-  static const String routeName = '/add-book';
+  static const String routeName = '/add-borrower';
 
   @override
-  TextFormFieldDemoState createState() => TextFormFieldDemoState();
+  AddBorrowerPageState createState() => AddBorrowerPageState();
 }
 
 class PersonData {
@@ -82,7 +76,7 @@ class _PasswordFieldState extends State<PasswordField> {
   }
 }
 
-class TextFormFieldDemoState extends State<TextFormFieldDemo> {
+class AddBorrowerPageState extends State<AddBorrowerPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   PersonData person = PersonData();
@@ -172,7 +166,7 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: const Text('Text fields'),
+        title: const Text('借阅人的信息'),
       ),
       body: SafeArea(
         top: false,
@@ -192,9 +186,9 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     filled: true,
-                    icon: Icon(Icons.confirmation_number),
-                    hintText: '听说这个号是书的唯一标示~',
-                    labelText: 'ISBN',
+                    icon: Icon(Icons.contacts),
+                    hintText: '输入借阅人的名字',
+                    labelText: '姓名',
                   ),
                   onSaved: (String value) {
                     //TODO: 保存isbn
@@ -215,9 +209,9 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     filled: true,
-                    icon: Icon(Icons.book),
-                    hintText: '这本书叫啥么名字啊? =￣ω￣= ',
-                    labelText: '书名',
+                    icon: Icon(Icons.supervised_user_circle),
+                    hintText: '输入你的性别',
+                    labelText: '性别',
                   ),
                   onSaved: (String value) {
                     //TODO: 保存书名
@@ -232,9 +226,9 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     filled: true,
-                    icon: Icon(Icons.people),
-                    hintText: '哇,这个作者很厉害~',
-                    labelText: '作者',
+                    icon: Icon(Icons.format_list_numbered),
+                    hintText: '输入你的卡号',
+                    labelText: '身份证号',
                   ),
                   // keyboardType: TextInputType.emailAddress,
                   onSaved: (String value) {
@@ -249,9 +243,9 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     filled: true,
-                    icon: Icon(Icons.home),
-                    hintText: '来自何门何派~',
-                    labelText: '出版社',
+                    icon: Icon(Icons.class_),
+                    hintText: '你是哪个系的',
+                    labelText: '系别',
                   ),
                   onSaved: (String value) {
                     //TODO: 保存出版社
@@ -267,9 +261,9 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     filled: true,
-                    icon: Icon(Icons.access_time),
-                    hintText: '蛋生日期 ;-)',
-                    labelText: '出版时间',
+                    icon: Icon(Icons.chrome_reader_mode),
+                    hintText: '你是哪个年级的)',
+                    labelText: '年级',
                   ),
                   onSaved: (String value) {
                     //TODO: 保存出版时间
@@ -279,7 +273,7 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
                   // validator: _validateName,
                 ),
                 // Book.publish_time
-                SizedBox(height: 24.0),
+                /*    SizedBox(height: 24.0),
                 TextFormField(
                   textCapitalization: TextCapitalization.words,
                   decoration: const InputDecoration(
@@ -307,7 +301,7 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
                     // person.email = value;
                   },
                 ),
-
+           */
                 // SizedBox(height: 24.0),
                 // TextFormField(
                 //   keyboardType: TextInputType.number,

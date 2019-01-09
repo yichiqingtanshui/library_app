@@ -1,7 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+
+import 'package:flutter_slidable/flutter_slidable.dart';
+
 import 'package:library_app/app/controller/book_controller.dart';
 import 'package:library_app/app/model/entity/book.dart';
-import 'package:library_app/app/view/raw_view/subpage/add_book_page.dart';
+import 'package:library_app/app/view/subpage/add_book_page.dart';
 
 final BookController _bookController = BookController();
 
@@ -15,20 +20,58 @@ class BookManagerPage extends StatefulWidget {
 class BookManagerPageState extends State<BookManagerPage> {
   final _BooksSearchDelegate _delegate = _BooksSearchDelegate();
 
+  void _showSnackBar(String value) {
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text(value)));
+  }
+
   Future<ListView> _booksBuilder() async {
     // 1.获取当前所有馆藏书籍
     List<Book> books = await _bookController.fetchAll();
 
     // 2.把数据实体(Model或Entity)转换为Widget
-    List<ListTile> booksWidget = books
-        .map(
-          (book) => ListTile(
-                title: Text(book.title),
-                subtitle: Text('${book.author} : ${book.isbn}'),
-                onTap: () => print('你摁了 ${book.title} !'),
-              ),
-        )
-        .toList();
+    List<Slidable> booksWidget = books.map(
+      (book) {
+        return Slidable(
+          key: Key(book.id.toString() + Random().nextInt(10000).toString()),
+          delegate: SlidableDrawerDelegate(),
+          actionExtentRatio: 0.25,
+          child: ListTile(
+            key: Key(book.id.toString()),
+            title: Text(book.title),
+            subtitle: Text('${book.author} : ${book.isbn}'),
+            onTap: () => print('你摁了 ${book.title} !'),
+          ),
+          actions: <Widget>[
+            IconSlideAction(
+              caption: 'Archive',
+              color: Colors.blue,
+              icon: Icons.archive,
+              onTap: () => _showSnackBar('Archive'),
+            ),
+            IconSlideAction(
+              caption: 'Share',
+              color: Colors.indigo,
+              icon: Icons.share,
+              onTap: () => _showSnackBar('Share'),
+            ),
+          ],
+          secondaryActions: <Widget>[
+            IconSlideAction(
+              caption: 'More',
+              color: Colors.black45,
+              icon: Icons.more_horiz,
+              onTap: () => _showSnackBar('More'),
+            ),
+            IconSlideAction(
+              caption: 'Delete',
+              color: Colors.red,
+              icon: Icons.delete,
+              onTap: () => _showSnackBar('Delete'),
+            ),
+          ],
+        );
+      },
+    ).toList();
 
     // 3. 返还 booksWidget
     return ListView(
@@ -73,7 +116,7 @@ class BookManagerPageState extends State<BookManagerPage> {
         tooltip: '添加书籍',
         // onPressed: () => print('BookManagerPage : 你摁下了这个悬浮按钮'),
         onPressed: () {
-          Navigator.of(context).pushNamed(TextFormFieldDemo.routeName);
+          Navigator.of(context).pushNamed(AddBookPage.routeName);
         },
       ),
     );

@@ -3,7 +3,8 @@ import 'package:library_app/app/controller/book_manager_controller.dart';
 import 'package:library_app/app/controller/borrower_controller.dart';
 import 'package:library_app/app/model/service/app_database.dart';
 import 'package:library_app/app/view/book_manager_page.dart';
-import 'package:library_app/app/view/raw_view/subpage/add_book_page.dart';
+import 'package:library_app/app/view/subpage/add_book_page.dart';
+import 'package:library_app/app/view/subpage/add_borrower_page.dart';
 import 'package:library_app/util/helper_db_functions.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -51,8 +52,8 @@ class LibraryApp extends StatelessWidget {
       home: App(),
       initialRoute: '/',
       routes: <String, WidgetBuilder>{
-        TextFormFieldDemo.routeName: (BuildContext context) =>
-            TextFormFieldDemo(),
+        AddBookPage.routeName: (BuildContext context) => AddBookPage(),
+        AddBorrowerPage.routeName: (BuildContext context) => AddBorrowerPage(),
       },
     );
   }
