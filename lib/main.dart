@@ -3,6 +3,7 @@ import 'package:library_app/app/controller/book_manager_controller.dart';
 import 'package:library_app/app/controller/borrower_controller.dart';
 import 'package:library_app/app/model/service/app_database.dart';
 import 'package:library_app/app/view/book_manager_page.dart';
+import 'package:library_app/app/view/raw_view/subpage/add_book_page.dart';
 import 'package:library_app/util/helper_db_functions.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -48,6 +49,11 @@ class LibraryApp extends StatelessWidget {
       title: 'LibraryApp',
       theme: ThemeData.light(),
       home: App(),
+      initialRoute: '/',
+      routes: <String, WidgetBuilder>{
+        TextFormFieldDemo.routeName: (BuildContext context) =>
+            TextFormFieldDemo(),
+      },
     );
   }
 }
@@ -70,6 +76,7 @@ class AppState extends State<App> {
     Text('Index 1: Business'),
     Text('Index 2: School'),
   ];
+
 //  BookManagerController bookManagerController;
 
   AppState(this.bookController, this.borrowerController);

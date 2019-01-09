@@ -12,6 +12,8 @@ void main() => runApp(MaterialApp(home: TextFormFieldDemo()));
 class TextFormFieldDemo extends StatefulWidget {
   const TextFormFieldDemo({Key key}) : super(key: key);
 
+  static const String routeName = '/add-book';
+
   @override
   TextFormFieldDemoState createState() => TextFormFieldDemoState();
 }
@@ -97,6 +99,7 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
       GlobalKey<FormFieldState<String>>();
   final _UsNumberTextInputFormatter _phoneNumberFormatter =
       _UsNumberTextInputFormatter();
+
   void _handleSubmitted() {
     final FormState form = _formKey.currentState;
     if (!form.validate()) {
@@ -344,7 +347,10 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
                 Center(
                   child: RaisedButton(
                     color: Colors.blueAccent,
-                    child: const Text('添加',style: TextStyle(color: Colors.white),),
+                    child: const Text(
+                      '添加',
+                      style: TextStyle(color: Colors.white),
+                    ),
                     onPressed: _handleSubmitted,
                   ),
                 ),

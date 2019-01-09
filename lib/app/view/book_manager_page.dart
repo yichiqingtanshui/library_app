@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:library_app/app/controller/book_controller.dart';
 import 'package:library_app/app/model/entity/book.dart';
+import 'package:library_app/app/view/raw_view/subpage/add_book_page.dart';
 
 final BookController _bookController = BookController();
 
@@ -24,7 +25,7 @@ class BookManagerPageState extends State<BookManagerPage> {
           (book) => ListTile(
                 title: Text(book.title),
                 subtitle: Text('${book.author} : ${book.isbn}'),
-                onTap: () => print('你嗯了 ${book.title} !'),
+                onTap: () => print('你摁了 ${book.title} !'),
               ),
         )
         .toList();
@@ -71,7 +72,9 @@ class BookManagerPageState extends State<BookManagerPage> {
         child: Icon(Icons.add),
         tooltip: '添加书籍',
         // onPressed: () => print('BookManagerPage : 你摁下了这个悬浮按钮'),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).pushNamed(TextFormFieldDemo.routeName);
+        },
       ),
     );
   }
@@ -132,7 +135,7 @@ class _BooksSearchDelegate extends SearchDelegate<int> {
           return snapshot.data;
         } else {
           return Container(
-            child: Text('┗|｀O′|┛ 嗷~~ 一本书都没有'),
+            child: Text('┗|｀O′|┛ 嗷~~ 一本书都搜不到'),
           );
         }
       },
