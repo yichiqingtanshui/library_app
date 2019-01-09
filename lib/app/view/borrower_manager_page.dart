@@ -1,47 +1,43 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-import 'package:library_app/app/controller/book_controller.dart';
-import 'package:library_app/app/model/entity/book.dart';
-import 'package:library_app/app/view/subpage/book_details_page.dart';
+import 'package:library_app/app/controller/borrower_controller.dart';
+import 'package:library_app/app/model/entity/borrower.dart';
+import 'package:library_app/app/view/subpage/borrower_details_page.dart';
 
-final BookController _bookController = BookController();
+final BorrowerController _borrowerController = BorrowerController();
 
-class BookManagerPage extends StatefulWidget {
-  BookManagerPage({Key key}) : super(key: key);
+class BorrowerManagerPage extends StatefulWidget {
+  BorrowerManagerPage({Key key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => BookManagerPageState();
+  State<StatefulWidget> createState() => BorrowerManagerPageState();
 }
 
-class BookManagerPageState extends State<BookManagerPage> {
-  final _BooksSearchDelegate _delegate = _BooksSearchDelegate();
-  List<Slidable> _booksWidget = null;
+class BorrowerManagerPageState extends State<BorrowerManagerPage> {
+  final _BorrowersSearchDelegate _delegate = _BorrowersSearchDelegate();
+  List<Slidable> _borrowersWidget = null;
 
   void _showSnackBar(String value) {
     Scaffold.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
-  Future<ListView> _booksBuilder() async {
-    // 1.获取当前所有馆藏书籍
-    List<Book> books = await _bookController.fetchAll();
+  Future<ListView> _borrowersBuilder() async {
+    List<Borrower> borrowers = await _borrowerController.fetchAll();
 
-    // 2.把数据实体(Model或Entity)转换为Widget
-//    List<Slidable> booksWidget = books.map(
-    _booksWidget = books.map(
-      (book) {
+    _borrowersWidget = borrowers.map(
+      (borrower) {
         return Slidable(
-          key: Key('book${book.id}'),
+          key: Key('book${borrower.id}'),
           delegate: SlidableDrawerDelegate(),
           actionExtentRatio: 0.25,
           child: ListTile(
-            key: Key(book.id.toString()),
-            title: Text(book.title),
-            subtitle: Text('${book.author} : ${book.isbn}'),
-            onTap: () => print('你摁了 ${book.title} !'),
+            key: Key(borrower.id.toString()),
+            title: Text(borrower.name),
+            subtitle: Text('${borrower.department} : ${borrower.cardNumber}'),
+            onTap: () => print('你摁了 ${borrower.name} !'),
           ),
           actions: <Widget>[
             IconSlideAction(
@@ -49,11 +45,15 @@ class BookManagerPageState extends State<BookManagerPage> {
               color: Colors.indigo,
               icon: Icons.info,
               onTap: () async {
-                Book b = Book(id: book.id, isbn: book.isbn, title: 'Changed');
+                Borrower b = Borrower(
+                  id: borrower.id,
+                  name: 'Changed',
+                  cardNumber: borrower.cardNumber,
+                );
 
-                await _bookController.modifyByBook(b);
+                await _borrowerController.modifyByBorrower(b);
                 setState(() {
-                  _showSnackBar('修改此项 ${book.id}');
+                  _showSnackBar('修改此项 ${borrower.id}');
                 });
               },
             ),
@@ -64,9 +64,9 @@ class BookManagerPageState extends State<BookManagerPage> {
               color: Colors.red,
               icon: Icons.delete,
               onTap: () async {
-                await _bookController.removeById(book.id);
+                await _borrowerController.removeById(borrower.id);
                 setState(() {
-                  _showSnackBar('删除此项 ${book.id}');
+                  _showSnackBar('删除此项 ${borrower.id}');
                 });
               },
             ),
@@ -77,7 +77,7 @@ class BookManagerPageState extends State<BookManagerPage> {
 
     // 3. 返还 booksWidget
     return ListView(
-      children: _booksWidget,
+      children: _borrowersWidget,
     );
   }
 
@@ -86,7 +86,7 @@ class BookManagerPageState extends State<BookManagerPage> {
     return Scaffold(
       primary: true,
       appBar: AppBar(
-        title: Text('图书管理'),
+        title: Text('借阅人管理'),
         centerTitle: true,
         actions: <Widget>[
           IconButton(
@@ -102,7 +102,7 @@ class BookManagerPageState extends State<BookManagerPage> {
         ],
       ),
       body: StreamBuilder(
-        stream: _booksBuilder().asStream(),
+        stream: _borrowersBuilder().asStream(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return snapshot.data;
@@ -115,17 +115,17 @@ class BookManagerPageState extends State<BookManagerPage> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        tooltip: '添加书籍',
+        tooltip: '添加借阅人',
         // onPressed: () => print('BookManagerPage : 你摁下了这个悬浮按钮'),
         onPressed: () {
-          Navigator.of(context).pushNamed(AddBookPage.routeName);
+          Navigator.of(context).pushNamed(AddBorrowerPage.routeName);
         },
       ),
     );
   }
 }
 
-class _BooksSearchDelegate extends SearchDelegate<int> {
+class _BorrowersSearchDelegate extends SearchDelegate<int> {
   /* 搜索栏左边: 退回上个页面 */
   @override
   Widget buildLeading(BuildContext context) {
@@ -188,11 +188,12 @@ class _BooksSearchDelegate extends SearchDelegate<int> {
   }
 
   Future<ListView> _resultBuilder() async {
-    List<Book> searchedBooks = await _bookController.searchByTitle(query);
+    List<Borrower> searchedBooks =
+        await _borrowerController.searchByName(query);
 
     List<ListTile> searchedBooksWidget = searchedBooks
         .map((book) => ListTile(
-              title: Text(book.title),
+              title: Text(book.name),
             ))
         .toList();
 

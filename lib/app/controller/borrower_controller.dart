@@ -15,7 +15,7 @@ class BorrowerController {
   }
 
   /// 修改借阅人信息
-  Future<bool> modifyByBook(Borrower borrower) async {
+  Future<bool> modifyByBorrower(Borrower borrower) async {
     return await dao.update(borrower);
   }
 
@@ -25,7 +25,7 @@ class BorrowerController {
   }
 
   /// 通过借阅人姓名搜索相应借阅人
-  Future<List<Borrower>> searchByTitle(String name) async {
+  Future<List<Borrower>> searchByName(String name) async {
     return await dao.findByName(name, isBlurred: true);
   }
 }
