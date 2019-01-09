@@ -1,5 +1,11 @@
 # library_app MVC
 
+
+# UI-TODOs:
+- [ ] 添加书籍页面 `add_book_page`
+    - [x] UI
+    - [ ] 逻辑
+
 # View
 1. 能展现所有的书籍
 2. 能修改指定书籍相关信息

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:library_app/app/controller/book_controller.dart';
 import 'package:library_app/app/model/entity/book.dart';
 
+final BookController _bookController = BookController();
+
 class BookManagerPage extends StatefulWidget {
   BookManagerPage({Key key}) : super(key: key);
 
@@ -10,17 +12,10 @@ class BookManagerPage extends StatefulWidget {
 }
 
 class BookManagerPageState extends State<BookManagerPage> {
-  final _SearchDemoSearchDelegate _delegate = _SearchDemoSearchDelegate();
-  final BookController _bookController = BookController();
+  final _BooksSearchDelegate _delegate = _BooksSearchDelegate();
 
-  Future<List<ListTile>> _booksBuilder() async {
+  Future<ListView> _booksBuilder() async {
     // 1.获取当前所有馆藏书籍
-
-    // List<Book> books = [
-    //   Book(title: 'Android开发', author: '王勇勇', isbn: 666),
-    //   Book(title: 'Linux', author: '王勇勇', isbn: 666),
-    //   Book(title: 'C++', author: '王勇勇', isbn: 666),
-    // ]; // TODO:....... (获取了书籍)
     List<Book> books = await _bookController.fetchAll();
 
     // 2.把数据实体(Model或Entity)转换为Widget
@@ -35,7 +30,9 @@ class BookManagerPageState extends State<BookManagerPage> {
         .toList();
 
     // 3. 返还 booksWidget
-    return booksWidget;
+    return ListView(
+      children: booksWidget,
+    );
   }
 
   @override
@@ -80,11 +77,8 @@ class BookManagerPageState extends State<BookManagerPage> {
   }
 }
 
-class _SearchDemoSearchDelegate extends SearchDelegate<int> {
-  final List<int> _data =
-      List<int>.generate(100001, (int i) => i).reversed.toList();
-  final List<int> _history = <int>[42607, 85604, 66374, 44, 174];
-
+class _BooksSearchDelegate extends SearchDelegate<int> {
+  /* 搜索栏左边: 退回上个页面 */
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
@@ -99,51 +93,63 @@ class _SearchDemoSearchDelegate extends SearchDelegate<int> {
     );
   }
 
+  /* 搜索栏右边: 填写时显示清空按钮*/
   @override
-  Widget buildSuggestions(BuildContext context) {
-    return Text('data');
+  List<Widget> buildActions(BuildContext context) {
+    if (query.isEmpty) {
+      return null;
+    } else {
+      return <Widget>[
+        IconButton(
+          tooltip: '清空',
+          icon: const Icon(Icons.clear),
+          onPressed: () {
+            query = '';
+            showSuggestions(context);
+          },
+        ),
+      ];
+    }
   }
 
+  /* 编写建议 */
   @override
-  Widget buildResults(BuildContext context) {
-    final int searched = int.tryParse(query);
-    if (searched == null || !_data.contains(searched)) {
-      return Center(
-        child: Text(
-          '"$query"\n is not a valid integer between 0 and 100,000.\nTry again.',
-          textAlign: TextAlign.center,
-        ),
-      );
-    }
-
-    return ListView(
-      children: <Widget>[
-        ListTile(
-          title: Text('data'),
-        )
-      ],
+  Widget buildSuggestions(BuildContext context) {
+    // TODO: implement buildSuggestions
+    return Center(
+      child: Text('请输入需要查找的书名'),
     );
   }
 
+  /* 查找结果列表 */
   @override
-  List<Widget> buildActions(BuildContext context) {
-    return <Widget>[
-      query.isEmpty
-          ? IconButton(
-              tooltip: 'Voice Search',
-              icon: const Icon(Icons.mic),
-              onPressed: () {
-                query = 'TODO: implement voice input';
-              },
-            )
-          : IconButton(
-              tooltip: 'Clear',
-              icon: const Icon(Icons.clear),
-              onPressed: () {
-                query = '';
-                showSuggestions(context);
-              },
-            )
-    ];
+  Widget buildResults(BuildContext context) {
+    // TODO: implement buildResults
+    return StreamBuilder(
+      stream: _resultBuilder().asStream(),
+      builder: (_, snapshot) {
+        if (query.isNotEmpty && snapshot.hasData) {
+          return snapshot.data;
+        } else {
+          return Container(
+            child: Text('┗|｀O′|┛ 嗷~~ 一本书都没有'),
+          );
+        }
+      },
+    );
+  }
+
+  Future<ListView> _resultBuilder() async {
+    List<Book> searchedBooks = await _bookController.searchByTitle(query);
+
+    List<ListTile> searchedBooksWidget = searchedBooks
+        .map((book) => ListTile(
+              title: Text(book.title),
+            ))
+        .toList();
+
+    return ListView(
+      children: searchedBooksWidget,
+    );
   }
 }
