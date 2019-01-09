@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:library_app/app/controller/book_controller.dart';
 import 'package:library_app/app/model/entity/book.dart';
 
 class BookManagerPage extends StatefulWidget {
@@ -10,15 +11,17 @@ class BookManagerPage extends StatefulWidget {
 
 class BookManagerPageState extends State<BookManagerPage> {
   final _SearchDemoSearchDelegate _delegate = _SearchDemoSearchDelegate();
+  final BookController _bookController = BookController();
 
-  List<ListTile> _booksBuilder() {
+  Future<List<ListTile>> _booksBuilder() async {
     // 1.获取当前所有馆藏书籍
 
-    List<Book> books = [
-      Book(title: 'Android开发', author: '王勇勇', isbn: 666),
-      Book(title: 'Linux', author: '王勇勇', isbn: 666),
-      Book(title: 'C++', author: '王勇勇', isbn: 666),
-    ]; // TODO:....... (获取了书籍)
+    // List<Book> books = [
+    //   Book(title: 'Android开发', author: '王勇勇', isbn: 666),
+    //   Book(title: 'Linux', author: '王勇勇', isbn: 666),
+    //   Book(title: 'C++', author: '王勇勇', isbn: 666),
+    // ]; // TODO:....... (获取了书籍)
+    List<Book> books = await _bookController.fetchAll();
 
     // 2.把数据实体(Model或Entity)转换为Widget
     List<ListTile> booksWidget = books
@@ -55,17 +58,23 @@ class BookManagerPageState extends State<BookManagerPage> {
           ),
         ],
       ),
-      body: ListView(
-        children: _booksBuilder(),
+      body: StreamBuilder(
+        stream: _booksBuilder().asStream(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return snapshot.data;
+          } else {
+            return Container(
+              child: Text('┗|｀O′|┛ 嗷~~ 一本书都没有'),
+            );
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         tooltip: '添加书籍',
         // onPressed: () => print('BookManagerPage : 你摁下了这个悬浮按钮'),
-        onPressed: () {
-          
-
-        },
+        onPressed: () {},
       ),
     );
   }
