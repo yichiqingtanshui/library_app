@@ -20,8 +20,9 @@ class LibraryApp extends StatelessWidget {
       home: App(),
       initialRoute: '/',
       routes: <String, WidgetBuilder>{
-        AddBookPage.routeName: (BuildContext context) => AddBookPage(),
-        AddBorrowerPage.routeName: (BuildContext context) => AddBorrowerPage(),
+        AddBookPage.routeName: (BuildContext context) => AddBookPage(null),
+        AddBorrowerPage.routeName: (BuildContext context) =>
+            AddBorrowerPage(null),
       },
     );
   }

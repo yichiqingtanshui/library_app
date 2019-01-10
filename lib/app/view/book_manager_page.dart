@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -49,9 +47,10 @@ class BookManagerPageState extends State<BookManagerPage> {
               color: Colors.indigo,
               icon: Icons.info,
               onTap: () async {
-                Book b = Book(id: book.id, isbn: book.isbn, title: 'Changed');
-
-                await _bookController.modifyByBook(b);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => AddBookPage(book)),
+                );
                 setState(() {
                   _showSnackBar('修改此项 ${book.id}');
                 });
@@ -93,7 +92,7 @@ class BookManagerPageState extends State<BookManagerPage> {
             icon: Icon(Icons.search),
             // onPressed: () => print('你摁了搜索按钮!'),
             onPressed: () async {
-              final int selected = await showSearch<int>(
+              await showSearch<int>(
                 context: context,
                 delegate: _delegate,
               );
@@ -163,7 +162,6 @@ class _BooksSearchDelegate extends SearchDelegate<int> {
   /* 编写建议 */
   @override
   Widget buildSuggestions(BuildContext context) {
-    // TODO: implement buildSuggestions
     return Center(
       child: Text('请输入需要查找的书名'),
     );
@@ -172,7 +170,6 @@ class _BooksSearchDelegate extends SearchDelegate<int> {
   /* 查找结果列表 */
   @override
   Widget buildResults(BuildContext context) {
-    // TODO: implement buildResults
     return StreamBuilder(
       stream: _resultBuilder().asStream(),
       builder: (_, snapshot) {

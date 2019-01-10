@@ -1,10 +1,14 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:library_app/app/controller/book_controller.dart';
+import 'package:library_app/app/model/entity/book.dart';
+
+BookController _bookController = BookController();
 
 class AddBookPage extends StatefulWidget {
-  const AddBookPage({Key key}) : super(key: key);
+  final Book thisBook;
+
+  AddBookPage(this.thisBook, {Key key}) : super(key: key);
 
   static const String routeName = '/add-book';
 
@@ -12,153 +16,42 @@ class AddBookPage extends StatefulWidget {
   AddBookPageState createState() => AddBookPageState();
 }
 
-class PersonData {
-  String name = '';
-  String phoneNumber = '';
-  String email = '';
-  String password = '';
-}
-
-class PasswordField extends StatefulWidget {
-  const PasswordField({
-    this.fieldKey,
-    this.hintText,
-    this.labelText,
-    this.helperText,
-    this.onSaved,
-    this.validator,
-    this.onFieldSubmitted,
-  });
-
-  final Key fieldKey;
-  final String hintText;
-  final String labelText;
-  final String helperText;
-  final FormFieldSetter<String> onSaved;
-  final FormFieldValidator<String> validator;
-  final ValueChanged<String> onFieldSubmitted;
-
-  @override
-  _PasswordFieldState createState() => _PasswordFieldState();
-}
-
-class _PasswordFieldState extends State<PasswordField> {
-  bool _obscureText = true;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      key: widget.fieldKey,
-      obscureText: _obscureText,
-      maxLength: 8,
-      onSaved: widget.onSaved,
-      validator: widget.validator,
-      onFieldSubmitted: widget.onFieldSubmitted,
-      decoration: InputDecoration(
-        border: const UnderlineInputBorder(),
-        filled: true,
-        hintText: widget.hintText,
-        labelText: widget.labelText,
-        helperText: widget.helperText,
-        suffixIcon: GestureDetector(
-          onTap: () {
-            setState(() {
-              _obscureText = !_obscureText;
-            });
-          },
-          child: Icon(
-            _obscureText ? Icons.visibility : Icons.visibility_off,
-            semanticLabel: _obscureText ? 'show password' : 'hide password',
-          ),
-        ),
-      ),
-    );
-  }
+class TmpBook {
+  int isbn;
+  String title;
+  String publish_time;
+  String author;
+  String brief;
+  int amount;
+  String press;
 }
 
 class AddBookPageState extends State<AddBookPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  PersonData person = PersonData();
+  TmpBook tmpBook = TmpBook();
 
   void showInSnackBar(String value) {
     _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
-  bool _autovalidate = false;
-  bool _formWasEdited = false;
-
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final GlobalKey<FormFieldState<String>> _passwordFieldKey =
-      GlobalKey<FormFieldState<String>>();
-  final _UsNumberTextInputFormatter _phoneNumberFormatter =
-      _UsNumberTextInputFormatter();
-
-  void _handleSubmitted() {
-    final FormState form = _formKey.currentState;
-    if (!form.validate()) {
-      _autovalidate = true; // Start validating on every change.
-      showInSnackBar('Please fix the errors in red before submitting.');
+  void _handleSubmitted() async {
+    Book updateOrNewBook = Book(
+      id: widget.thisBook?.id,
+      isbn: tmpBook.isbn,
+      amount: tmpBook.amount,
+      author: tmpBook.author,
+      brief: tmpBook.brief,
+      press: tmpBook.press,
+      publish_time: tmpBook.publish_time,
+      title: tmpBook.title,
+    );
+    bool result = await _bookController.modifyByBook(updateOrNewBook);
+    if (result) {
+      showInSnackBar('提交成功');
     } else {
-      form.save();
-      showInSnackBar('${person.name}\'s phone number is ${person.phoneNumber}');
+      showInSnackBar('啊,偶! 好像有点问题~');
     }
-  }
-
-  String _validateName(String value) {
-    _formWasEdited = true;
-    if (value.isEmpty) return 'Name is required.';
-    final RegExp nameExp = RegExp(r'^[A-Za-z ]+$');
-    if (!nameExp.hasMatch(value))
-      return 'Please enter only alphabetical characters.';
-    return null;
-  }
-
-  String _validatePhoneNumber(String value) {
-    _formWasEdited = true;
-    final RegExp phoneExp = RegExp(r'^\(\d\d\d\) \d\d\d\-\d\d\d\d$');
-    if (!phoneExp.hasMatch(value))
-      return '(###) ###-#### - Enter a US phone number.';
-    return null;
-  }
-
-  String _validatePassword(String value) {
-    _formWasEdited = true;
-    final FormFieldState<String> passwordField = _passwordFieldKey.currentState;
-    if (passwordField.value == null || passwordField.value.isEmpty)
-      return 'Please enter a password.';
-    if (passwordField.value != value) return 'The passwords don\'t match';
-    return null;
-  }
-
-  Future<bool> _warnUserAboutInvalidData() async {
-    final FormState form = _formKey.currentState;
-    if (form == null || !_formWasEdited || form.validate()) return true;
-
-    return await showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('This form has errors'),
-              content: const Text('Really leave this form?'),
-              actions: <Widget>[
-                FlatButton(
-                  child: const Text('YES'),
-                  onPressed: () {
-                    Navigator.of(context).pop(true);
-                  },
-                ),
-                FlatButton(
-                  child: const Text('NO'),
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                  },
-                ),
-              ],
-            );
-          },
-        ) ??
-        false;
   }
 
   @override
@@ -166,15 +59,12 @@ class AddBookPageState extends State<AddBookPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: const Text('Text fields'),
+        title: const Text('添加/修改书籍'),
       ),
       body: SafeArea(
         top: false,
         bottom: false,
         child: Form(
-          key: _formKey,
-          autovalidate: _autovalidate,
-          onWillPop: _warnUserAboutInvalidData,
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
@@ -183,6 +73,7 @@ class AddBookPageState extends State<AddBookPage> {
                 SizedBox(height: 24.0),
                 // Book.isbn
                 TextFormField(
+                  initialValue: widget.thisBook?.isbn.toString() ?? "",
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     filled: true,
@@ -191,20 +82,13 @@ class AddBookPageState extends State<AddBookPage> {
                     labelText: 'ISBN',
                   ),
                   onSaved: (String value) {
-                    //TODO: 保存isbn
-                    // person.phoneNumber = value;
+                    tmpBook.isbn = int.tryParse(value);
                   },
-                  // validator: _validatePhoneNumber,
-                  // TextInputFormatters are applied in sequence.
-                  // inputFormatters: <TextInputFormatter>[
-                  //   WhitelistingTextInputFormatter.digitsOnly,
-                  //   // Fit the validating format.
-                  //   _phoneNumberFormatter,
-                  // ],
                 ),
                 SizedBox(height: 24.0),
                 // Book.title
                 TextFormField(
+                  initialValue: widget.thisBook?.title ?? "",
                   textCapitalization: TextCapitalization.words,
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
@@ -214,15 +98,13 @@ class AddBookPageState extends State<AddBookPage> {
                     labelText: '书名',
                   ),
                   onSaved: (String value) {
-                    //TODO: 保存书名
-                    // person.name = value;
+                    tmpBook.title = value;
                   },
-                  // 合法验证
-                  // validator: _validateName,
                 ),
                 SizedBox(height: 24.0),
                 // Book.author
                 TextFormField(
+                  initialValue: widget.thisBook?.author ?? "",
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     filled: true,
@@ -232,13 +114,13 @@ class AddBookPageState extends State<AddBookPage> {
                   ),
                   // keyboardType: TextInputType.emailAddress,
                   onSaved: (String value) {
-                    //TODO: author
-                    // person.email = value;
+                    tmpBook.author = value;
                   },
                 ),
                 SizedBox(height: 24.0),
                 // Book.press
                 TextFormField(
+                  initialValue: widget.thisBook?.press ?? "",
                   textCapitalization: TextCapitalization.words,
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
@@ -248,15 +130,13 @@ class AddBookPageState extends State<AddBookPage> {
                     labelText: '出版社',
                   ),
                   onSaved: (String value) {
-                    //TODO: 保存出版社
-                    // person.name = value;
+                    tmpBook.press = value;
                   },
-                  // 合法验证
-                  // validator: _validateName,
                 ),
                 SizedBox(height: 24.0),
                 // Book.publish_time
                 TextFormField(
+                  initialValue: widget.thisBook?.publish_time ?? "",
                   textCapitalization: TextCapitalization.words,
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
@@ -266,8 +146,7 @@ class AddBookPageState extends State<AddBookPage> {
                     labelText: '出版时间',
                   ),
                   onSaved: (String value) {
-                    //TODO: 保存出版时间
-                    // person.name = value;
+                    tmpBook.publish_time = value;
                   },
                   // 合法验证
                   // validator: _validateName,
@@ -275,6 +154,7 @@ class AddBookPageState extends State<AddBookPage> {
                 // Book.publish_time
                 SizedBox(height: 24.0),
                 TextFormField(
+                  initialValue: widget.thisBook?.amount.toString() ?? "",
                   textCapitalization: TextCapitalization.words,
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
@@ -283,11 +163,15 @@ class AddBookPageState extends State<AddBookPage> {
                     hintText: '又来了多少小伙伴',
                     labelText: '进书数量',
                   ),
+                  onSaved: (String value) {
+                    tmpBook.amount = int.tryParse(value);
+                  },
                 ),
                 // Book.publish_time
                 SizedBox(height: 24.0),
                 // Book.brief
                 TextFormField(
+                  initialValue: widget.thisBook?.brief ?? "",
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     filled: true,
@@ -297,46 +181,9 @@ class AddBookPageState extends State<AddBookPage> {
                   ),
                   maxLines: 3,
                   onSaved: (String value) {
-                    //TODO: brief
-                    // person.email = value;
+                    tmpBook.brief = value;
                   },
                 ),
-
-                // SizedBox(height: 24.0),
-                // TextFormField(
-                //   keyboardType: TextInputType.number,
-                //   decoration: const InputDecoration(
-                //       border: OutlineInputBorder(),
-                //       labelText: 'Salary',
-                //       prefixText: '\$',
-                //       suffixText: 'USD',
-                //       suffixStyle: TextStyle(color: Colors.green)),
-                //   maxLines: 1,
-                // ),
-                // const SizedBox(height: 24.0),
-                // PasswordField(
-                //   fieldKey: _passwordFieldKey,
-                //   helperText: 'No more than 8 characters.',
-                //   labelText: 'Password *',
-                //   onFieldSubmitted: (String value) {
-                //     setState(() {
-                //       person.password = value;
-                //     });
-                //   },
-                // ),
-                // const SizedBox(height: 24.0),
-                // TextFormField(
-                //   enabled:
-                //       person.password != null && person.password.isNotEmpty,
-                //   decoration: const InputDecoration(
-                //     border: UnderlineInputBorder(),
-                //     filled: true,
-                //     labelText: 'Re-type password',
-                //   ),
-                //   maxLength: 8,
-                //   obscureText: true,
-                //   validator: _validatePassword,
-                // ),
                 const SizedBox(height: 24.0),
                 Center(
                   child: RaisedButton(
@@ -354,41 +201,6 @@ class AddBookPageState extends State<AddBookPage> {
           ),
         ),
       ),
-    );
-  }
-}
-
-/// Format incoming numeric text to fit the format of (###) ###-#### ##...
-class _UsNumberTextInputFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    final int newTextLength = newValue.text.length;
-    int selectionIndex = newValue.selection.end;
-    int usedSubstringIndex = 0;
-    final StringBuffer newText = StringBuffer();
-    if (newTextLength >= 1) {
-      newText.write('(');
-      if (newValue.selection.end >= 1) selectionIndex++;
-    }
-    if (newTextLength >= 4) {
-      newText.write(newValue.text.substring(0, usedSubstringIndex = 3) + ') ');
-      if (newValue.selection.end >= 3) selectionIndex += 2;
-    }
-    if (newTextLength >= 7) {
-      newText.write(newValue.text.substring(3, usedSubstringIndex = 6) + '-');
-      if (newValue.selection.end >= 6) selectionIndex++;
-    }
-    if (newTextLength >= 11) {
-      newText.write(newValue.text.substring(6, usedSubstringIndex = 10) + ' ');
-      if (newValue.selection.end >= 10) selectionIndex++;
-    }
-    // Dump the rest.
-    if (newTextLength >= usedSubstringIndex)
-      newText.write(newValue.text.substring(usedSubstringIndex));
-    return TextEditingValue(
-      text: newText.toString(),
-      selection: TextSelection.collapsed(offset: selectionIndex),
     );
   }
 }

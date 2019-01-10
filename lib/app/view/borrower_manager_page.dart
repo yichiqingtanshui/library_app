@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -45,13 +44,11 @@ class BorrowerManagerPageState extends State<BorrowerManagerPage> {
               color: Colors.indigo,
               icon: Icons.info,
               onTap: () async {
-                Borrower b = Borrower(
-                  id: borrower.id,
-                  name: 'Changed',
-                  cardNumber: borrower.cardNumber,
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          AddBorrowerPage(borrower)),
                 );
-
-                await _borrowerController.modifyByBorrower(b);
                 setState(() {
                   _showSnackBar('修改此项 ${borrower.id}');
                 });
@@ -93,7 +90,7 @@ class BorrowerManagerPageState extends State<BorrowerManagerPage> {
             icon: Icon(Icons.search),
             // onPressed: () => print('你摁了搜索按钮!'),
             onPressed: () async {
-              final int selected = await showSearch<int>(
+              await showSearch<int>(
                 context: context,
                 delegate: _delegate,
               );
@@ -163,7 +160,6 @@ class _BorrowersSearchDelegate extends SearchDelegate<int> {
   /* 编写建议 */
   @override
   Widget buildSuggestions(BuildContext context) {
-    // TODO: implement buildSuggestions
     return Center(
       child: Text('请输入需要查找的书名'),
     );
@@ -172,7 +168,6 @@ class _BorrowersSearchDelegate extends SearchDelegate<int> {
   /* 查找结果列表 */
   @override
   Widget buildResults(BuildContext context) {
-    // TODO: implement buildResults
     return StreamBuilder(
       stream: _resultBuilder().asStream(),
       builder: (_, snapshot) {

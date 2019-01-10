@@ -1,10 +1,8 @@
 // skip this file to avoid getting errors when running your unit tests
 @Skip("sqflite cannot run on the machine.")
 
-import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 
 class SQLitePathsDao {
   SQLitePathsDao(Object sqlite);
