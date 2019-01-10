@@ -103,7 +103,7 @@ class BookManagerController {
       bool result = resultOfUpdatingBorrower && resultOfUpdatingBorrowingInfo;
       return Result(
         value: result,
-        message: (result ? '超期 $overdueDay 天,请联系管理员递交罚款' : '数据库错误,请联系技术顾问'),
+        message: (result ? '超期 $overdueDay 天,需要递交罚款' : '数据库错误,请联系技术顾问'),
       );
     } else {
       borrowingInfo.returnTime = returnTime.millisecondsSinceEpoch;
@@ -123,14 +123,14 @@ class BookManagerController {
     if (borrower.canBorrow) {
       return Result(
         value: false,
-        message: '您不需要交罚款',
+        message: '该用户不需要交罚款',
       );
     }
     bool result = await borrowerDao.update(borrower);
     // FIXME:思考其他表需不需要更新
     return Result(
       value: result,
-      message: (result ? '交费成功' : '数据库错误,请联系技术顾问'),
+      message: (result ? '该用户交费成功' : '数据库错误,请联系技术顾问'),
     );
   }
 }
