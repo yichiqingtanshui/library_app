@@ -28,6 +28,7 @@ class TmpBook {
 
 class AddBookPageState extends State<AddBookPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
   TmpBook tmpBook = TmpBook();
 
@@ -36,6 +37,8 @@ class AddBookPageState extends State<AddBookPage> {
   }
 
   void _handleSubmitted() async {
+    final form = _formKey.currentState;
+    form.save();
     Book updateOrNewBook = Book(
       id: widget.thisBook?.id,
       isbn: tmpBook.isbn,
@@ -46,12 +49,13 @@ class AddBookPageState extends State<AddBookPage> {
       publish_time: tmpBook.publish_time,
       title: tmpBook.title,
     );
-    bool result = await _bookController.modifyByBook(updateOrNewBook);
-    if (result) {
-      showInSnackBar('提交成功');
+    bool result = false;
+    if (widget.thisBook != null) {
+      result = await _bookController.modifyByBook(updateOrNewBook);
     } else {
-      showInSnackBar('啊,偶! 好像有点问题~');
+      result = await _bookController.add(updateOrNewBook);
     }
+    showInSnackBar('提交成功');
   }
 
   @override
@@ -65,13 +69,13 @@ class AddBookPageState extends State<AddBookPage> {
         top: false,
         bottom: false,
         child: Form(
+          key: _formKey,
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 SizedBox(height: 24.0),
-                // Book.isbn
                 TextFormField(
                   initialValue: widget.thisBook?.isbn.toString() ?? "",
                   decoration: const InputDecoration(
@@ -189,7 +193,7 @@ class AddBookPageState extends State<AddBookPage> {
                   child: RaisedButton(
                     color: Colors.blueAccent,
                     child: const Text(
-                      '添加',
+                      '提交',
                       style: TextStyle(color: Colors.white),
                     ),
                     onPressed: _handleSubmitted,
